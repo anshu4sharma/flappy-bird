@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import { connect } from "react-redux";
 import Bird from "./Bird";
 import Pipe from "./Pipe";
@@ -6,6 +6,7 @@ import Foreground from "./Foreground";
 let gameLoop;
 let pipeGenerator;
 const Game = ({ status, start, fly }) => {
+  const gameref = useRef();
   if (status === "game-over") {
     clearInterval(gameLoop);
     clearInterval(pipeGenerator);
@@ -13,20 +14,19 @@ const Game = ({ status, start, fly }) => {
 
   useEffect(() => {
     const handleKeyPress = (e) => {
-      if (e.keyCode === 32) {
+      if (gameref.current.contains(e.target)) {
         fly();
       }
-
       if (status !== "playing") {
         start();
       }
     };
 
-    document.addEventListener("keypress", handleKeyPress);
+    document.addEventListener("click", handleKeyPress);
   }, []);
 
   return (
-    <div className="game">
+    <div ref={gameref} className="game">
       <Bird />
       <Pipe />
       <Foreground />
